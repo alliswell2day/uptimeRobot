@@ -1,64 +1,62 @@
 <?php
 /**
+ * File exemple of utilisation uptimerobot class
+ * 
+ * Before use replace 0000 by the value of id.
+ * 
+ * @version     1.0
  * @author      Watchful
  * @authorUrl   http://www.watchful.li
- * @copyright	Copyright (C) 2012-2014 Watchful
  * @license     GNU General Public License version 2 or later
  */
-require_once 'uptimerobot.php';
+require_once 'src/uptimerobot.php';
 
 $upRobot = new UptimeRobot();
 
-$upRobot::configure('u130991-1d98de23ca511463a64be6de', 1);
-//$upRobot::configure('m776083808-58b6c27ffb0c4d8db3f758fd', 1); //Monitor Google (id:776083808) Specific Key
+$upRobot::configure('YOUR-API-KEY', 1);
 
-$upRobot->setFormat('xml');
-
-echo '<pre>';
+$upRobot->setFormat('json'); //Define the format of responses (json or xml)
 
 /**
  * Get monitors
  */
-//print_r($upRobot->getMonitors());
-//print_r($upRobot->getMonitors($monitors = null, $customUptimeRatio = array('1', '7'), $logs = 1, $responseTimes = 1, $responseTimesAverage = 180, $alertContacts = 0, $showMonitorAlertContacts = 1, $showTimezone = 1));
-var_dump($upRobot->getMonitors(array('776083808')));
+$upRobot->getMonitors(); //Get all monitors
+$upRobot->getMonitors(0000); //Get one monitor by her id
+$upRobot->getMonitors($monitors = 0000, $customUptimeRatio = array('1', '7'), $logs = 0, $responseTimes = 1, $responseTimesAverage = 180, $alertContacts = 1, $showMonitorAlertContacts = 1, $showTimezone = 1);
 
 /**
  * New monitor
  */
-//var_dump($upRobot->newMonitor("Google", 'https://google.com', 1));
-//var_dump($upRobot->newMonitor("The W of Wikipedia", 'http://fr.wikipedia.org/', 2, null, null, 2, 'W'));
-//var_dump($upRobot->newMonitor("Ping DNS of Google", '8.8.8.8', 3));
-//var_dump($upRobot->newMonitor("Http port Google", 'google.com', 4, 99, 80));
-//var_dump($new = $upRobot->newMonitor('Watchful', 'https://watchful.li', $type = 1, $subType = 2, $port = null, $keywordType = null, $keywordValue = null, $HTTPUsername = null, $HTTPPassword = null, $alertContacts = array('0130991')));
+$upRobot->newMonitor("Google", 'https://google.com', 1); //Monitor URL
+$upRobot->newMonitor("The W of Wikipedia", 'http://fr.wikipedia.org', 2, null, null, 2, 'W'); //Check word on a page
+$upRobot->newMonitor("Ping DNS of Google", '8.8.8.8', 3); //Ping IP
+$upRobot->newMonitor("Check custom port", 'exemple.com', 4, 99, 22); //Check custom port
+$upRobot->newMonitor('Watchful.li', 'https://watchful.li', $type = 1, $subType = 2, $port = null, $keywordType = null, $keywordValue = null, $HTTPUsername = null, $HTTPPassword = null, $alertContacts = null); //All parameters
 
 /**
  * Edit monitor
  */
-//var_dump($upRobot->editMonitor($monitorId= '776082283', $monitorStatus = null, $friendlyName = null, $URL = null, $subType = 99, $port = 25, $keywordType = null, $keywordValue = null, $HTTPUsername = null, $HTTPPassword = null, $alertContacts = null));
-//var_dump($upRobot->editMonitor($monitorId = $new->monitor->id, $monitorStatus = null, $friendlyName = 'Watchful - edit', $URL = null, $subType = null, $port = null, $keywordType = null, $keywordValue = null, $HTTPUsername = null, $HTTPPassword = null, $alertContacts = array('')));
-//var_dump($upRobot->editMonitor($monitorId = '776083808', $monitorStatus = null, $friendlyName = null, $URL = null, $subType = null, $port = null, $keywordType = null, $keywordValue = null, $HTTPUsername = null, $HTTPPassword = null, $alertContacts = array('')));
+$upRobot->editMonitor($monitorId = 0000, $monitorStatus = null, $friendlyName = 'Edit name of monitor'); //Edit name
+$upRobot->editMonitor($monitorId = 0000, $monitorStatus = null, $friendlyName = null, $URL = null, $subType = 99, $port = 25); //Edit port of monitor
+$upRobot->editMonitor($monitorId = 0000, $monitorStatus = null, $friendlyName = null, $URL = null, $subType = null, $port = null, $keywordType = null, $keywordValue = null, $HTTPUsername = null, $HTTPPassword = null, $alertContacts = null); //All parameters
 
 /**
  * Delete monitor
  */
-//var_dump($upRobot->deleteMonitor($new->monitor->id)); //776080963
+$upRobot->deleteMonitor(0000); //Delete monitor
 
 /**
  * Get alert contacts
  */
-//print_r($upRobot->getAlertContacts());
+$upRobot->getAlertContacts(); //Get all contacts
+$upRobot->getAlertContacts(0000); //Get one contact by her id
 
 /**
  * New alert Contact
  */
-//print_r($upRobot->newAlertContact('2', 'stagiaire+up324@inetis.ch'));
+$upRobot->newAlertContact(2, 'YOUR-EMAIL'); //Create new alert contact
 
 /**
  * Delete alert Contact
  */
-//print_r($upRobot->deleteAlertContact(2250722));
-
-
-echo '</pre>';
-?>
+$upRobot->deleteAlertContact(0000); //Delete alert contact

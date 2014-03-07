@@ -1,9 +1,12 @@
 <?php
 /**
- * @version     From mb2o <https://github.com/CodingOurWeb/PHP-wrapper-for-UptimeRobot-API>
+ * This project is an open source implementation for acessing the UptimeRobot api.
+ * Full documentation: http://uptimerobot.com/api
+ * 
+ * @version     1.0
  * @author      Watchful
  * @authorUrl   http://www.watchful.li
- * @copyright	Copyright (C) 2012-2014 Watchful
+ * @filesource  From mb2o <https://github.com/CodingOurWeb/PHP-wrapper-for-UptimeRobot-API>
  * @license     GNU General Public License version 2 or later
  */
 class UptimeRobot
@@ -19,7 +22,6 @@ class UptimeRobot
      * @param string $key               require   Set your main API Key or Monitor-Specific API Keys (only getMonitors)
      * @param bool   $noJsonCallback    optional  Define if the function wrapper to be removed
      * 
-     * @assert ('u130991-1d98de23ca511463a64be6de', 1) == 0
      */
     public static function configure($key, $noJsonCallback = 1)
     {
@@ -54,14 +56,17 @@ class UptimeRobot
      *    
      * @param mixed $format required
      * 
-     * @assert ('xml')
-     * @assert ('json')
      */
     public function setFormat($format)
     {
-        if (empty($format) || ($format != 'xml' && $format != 'json'))
+        if (empty($format))
         {
             throw new Exception('Value not specified: format', 1);
+        }
+
+        if (($format != 'xml' && $format != 'json'))
+        {
+            throw new Exception('Format not valid: format', 1);
         }
 
         $this->format = $format;
@@ -90,7 +95,7 @@ class UptimeRobot
 
         $url .= '&format=' . $this->format;
         $url .= '&noJsonCallback=' . static::$noJsonCallback;
-        echo $url;
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -119,9 +124,9 @@ class UptimeRobot
     /**
      * This is a Swiss-Army knife type of a method for getting any information on monitors
      * 
-     * @param array $monitors                   optional    if not used, will return all monitors in an account. 
+     * @param array|int $monitors               optional    if not used, will return all monitors in an account. 
      *                                                      Else, it is possible to define any number of monitors with their IDs                  
-     * @param array $customUptimeRatio          optional    Defines the number of days to calculate the uptime ratio(s)
+     * @param array|int $customUptimeRatio      optional    Defines the number of days to calculate the uptime ratio(s)
      * @param bool  $logs                       optional    Defines if the logs of each monitor will be returned
      * @param bool  $responseTimes              optional    Defines if the response time data of each monitor will be returned
      * @param bool  $responseTimesAverage       optional    By default, response time value of each check is returned. The API can return average values in given minutes. Default is 0
@@ -131,7 +136,7 @@ class UptimeRobot
      * @param bool  $showTimezone               optional    Defines if the user's timezone should be returned
      * 
      */
-    public function getMonitors(array $monitors = null, $customUptimeRatio = null, $logs = 0, $responseTimes = 0, $responseTimesAverage = 0, $alertContacts = 0, $showMonitorAlertContacts = 0, $showTimezone = 0)
+    public function getMonitors($monitors = null, $customUptimeRatio = null, $logs = 0, $responseTimes = 0, $responseTimesAverage = 0, $alertContacts = 0, $showMonitorAlertContacts = 0, $showTimezone = 0)
     {
         $url = $this->base_uri . '/getMonitors';
 
@@ -139,11 +144,11 @@ class UptimeRobot
 
         if (!empty($monitors))
         {
-            $url .= '&monitors=' . implode('-', $monitors);
+            $url .= '&monitors=' . $this->getImplode($monitors);
         }
         if (!empty($customUptimeRatio))
         {
-            $url .= '&customUptimeRatio=' . implode('-', $customUptimeRatio);
+            $url .= '&customUptimeRatio=' . $this->getImplode($customUptimeRatio);
         }
 
         return $this->__fetch($url);
@@ -161,11 +166,10 @@ class UptimeRobot
      * @param string $keywordValue   optional (required for keyword monitoring)
      * @param string $HTTPUsername   optional
      * @param string $HTTPPassword   optional
-     * @param array  $alertContacts  optional The alert contacts to be notified Multiple alertContactIDs can be sent
+     * @param array|int $alertContacts  optional The alert contacts to be notified Multiple alertContactIDs can be sent
      */
     public function newMonitor($friendlyName, $URL, $type, $subType = null, $port = null, $keywordType = null, $keywordValue = null, $HTTPUsername = null, $HTTPPassword = null, $alertContacts = null)
     {
-        //+ monitorHTTPUsername monitorHTTPPassword monitorAlertContacts 
         if (empty($friendlyName) || empty($URL) || empty($type))
         {
             throw new Exception('Required key "name", "uri" or "type" not specified', 3);
@@ -182,25 +186,25 @@ class UptimeRobot
         {
             $url .= '&monitorPort=' . $port;
         }
-        if (!is_null($keywordType))
+        if (isset($keywordType))
         {
             $url .= '&monitorKeywordType=' . $keywordType;
         }
-        if (!is_null($keywordValue))
+        if (isset($keywordValue))
         {
             $url .= '&monitorKeywordValue=' . urlencode($keywordValue);
         }
-        if (!is_null($HTTPUsername))
+        if (isset($HTTPUsername))
         {
             $url .= '&monitorHTTPUsername=' . urlencode($HTTPUsername);
         }
-        if (!is_null($HTTPPassword))
+        if (isset($HTTPPassword))
         {
             $url .= '&monitorHTTPPassword=' . urlencode($HTTPPassword);
         }
         if (!empty($alertContacts))
         {
-            $url .= '&monitorAlertContacts=' . implode('-', $alertContacts);
+            $url .= '&monitorAlertContacts=' . $this->getImplode($alertContacts);
         }
 
         return $this->__fetch($url);
@@ -222,8 +226,8 @@ class UptimeRobot
      * @param string $keywordValue   optional (used only for keyword monitoring)
      * @param string $HTTPUsername   optional (in order to remove any previously added username, simply send the value empty)
      * @param string $HTTPPassword   optional (in order to remove any previously added password, simply send the value empty)
-     * @param array  $alertContacts  optional The alert contacts to be notified Multiple alertContactIDs can be sent
-     *                                        (in order to remove any previously added alert contacts, simply send the value empty like array(''))
+     * @param array|int  $alertContacts  optional   The alert contacts to be notified Multiple alertContactIDs can be sent
+     *                                              (in order to remove any previously added alert contacts, simply send the value empty like '')
      */
     public function editMonitor($monitorId, $monitorStatus = null, $friendlyName = null, $URL = null, $subType = null, $port = null, $keywordType = null, $keywordValue = null, $HTTPUsername = null, $HTTPPassword = null, $alertContacts = null)
     {
@@ -268,7 +272,7 @@ class UptimeRobot
         }
         if (!empty($alertContacts))
         {
-            $url .= '&monitorAlertContacts=' . implode('-', $alertContacts);
+            $url .= '&monitorAlertContacts=' . $this->getImplode($alertContacts);
         }
 
         return $this->__fetch($url);
@@ -294,8 +298,8 @@ class UptimeRobot
     /**
      * The list of alert contacts can be called with this method.
      * 
-     * @param array $alertcontacts  optional    if not used, will return all alert contacts in an account. 
-     *                                          Else, it is possible to define any number of alert contacts with their IDs
+     * @param array|int $alertcontacts  optional    if not used, will return all alert contacts in an account. 
+     *                                              Else, it is possible to define any number of alert contacts with their IDs
      */
     public function getAlertContacts($alertcontacts = null)
     {
@@ -303,7 +307,7 @@ class UptimeRobot
 
         if (!empty($alertcontacts))
         {
-            $url .= '?alertcontacts=' . implode('-', $alertcontacts);
+            $url .= '?alertcontacts=' . $this->getImplode($alertcontacts);
         }
 
         return $this->__fetch($url);
@@ -344,6 +348,21 @@ class UptimeRobot
         $url = $this->base_uri . '/deleteAlertContact?alertContactID=' . $alertContactID;
 
         return $this->__fetch($url);
+    }
+
+    /**
+     * Array or int to string with separator (-)
+     * 
+     * @param array|int $var
+     * @return type string
+     */
+    private function getImplode($var)
+    {
+        if (is_array($var))
+        {
+            return implode('-', $var);
+        }
+        return $var;
     }
 
 }
