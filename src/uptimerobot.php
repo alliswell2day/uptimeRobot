@@ -166,9 +166,10 @@ class UptimeRobot
      * @param string $keywordValue   optional (required for keyword monitoring)
      * @param string $HTTPUsername   optional
      * @param string $HTTPPassword   optional
+     * @param string $monitorInterval optional interval in min
      * @param array|int $alertContacts  optional The alert contacts to be notified Multiple alertContactIDs can be sent
      */
-    public function newMonitor($friendlyName, $URL, $type, $subType = null, $port = null, $keywordType = null, $keywordValue = null, $HTTPUsername = null, $HTTPPassword = null, $alertContacts = null)
+    public function newMonitor($friendlyName, $URL, $type, $subType = null, $port = null, $keywordType = null, $keywordValue = null, $HTTPUsername = null, $HTTPPassword = null, $alertContacts = null, $monitorInterval=5)
     {
         if (empty($friendlyName) || empty($URL) || empty($type))
         {
@@ -205,6 +206,10 @@ class UptimeRobot
         if (!empty($alertContacts))
         {
             $url .= '&monitorAlertContacts=' . $this->getImplode($alertContacts);
+        }
+        if (!empty($monitorInterval))
+        {
+             $url .= '&monitorInterval=' . $monitorInterval;  
         }
 
         return $this->__fetch($url);
