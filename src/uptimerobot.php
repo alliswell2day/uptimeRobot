@@ -11,7 +11,7 @@
  */
 class UptimeRobot
 {
-    private $base_uri = 'http://api.uptimerobot.com';
+    private $base_uri = 'https://api.uptimerobot.com';
     static private $apiKey;
     static private $noJsonCallback;
     private $format = "json";
@@ -134,10 +134,12 @@ class UptimeRobot
      *                                                      Requires logs to be set to 1
      * @param bool  $showMonitorAlertContacts   optional    Defines if the alert contacts set for the monitor to be returned
      * @param bool  $showTimezone               optional    Defines if the user's timezone should be returned
+     * @param string $search                    optional    a keyword of your choice to search within monitorURL and monitorFriendlyName and get filtered results
      * 
      */
-    public function getMonitors($monitors = null, $customUptimeRatio = null, $logs = 0, $responseTimes = 0, $responseTimesAverage = 0, $alertContacts = 0, $showMonitorAlertContacts = 0, $showTimezone = 0)
+    public function getMonitors($monitors = null, $customUptimeRatio = null, $logs = 0, $responseTimes = 0, $responseTimesAverage = 0, $alertContacts = 0, $showMonitorAlertContacts = 0, $showTimezone = 0, $search = "")
     {
+
         $url = $this->base_uri . '/getMonitors';
 
         $url .= '?logs=' . $logs . '&responseTimes=' . $responseTimes . '&responseTimesAverage=' . $responseTimesAverage . '&alertContacts=' . $alertContacts . '&showMonitorAlertContacts=' . $showMonitorAlertContacts . '&showTimezone=' . $showTimezone;
@@ -149,6 +151,11 @@ class UptimeRobot
         if (!empty($customUptimeRatio))
         {
             $url .= '&customUptimeRatio=' . $this->getImplode($customUptimeRatio);
+        }
+
+        if (!empty($search))
+        {
+            $url .= '&search=' . htmlspecialchars($search);
         }
 
         return $this->__fetch($url);
