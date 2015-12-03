@@ -157,8 +157,20 @@ class UptimeRobot
         {
             $url .= '&search=' . htmlspecialchars($search);
         }
+        $result = $this->__fetch($url);
+        $limit = $result->limit;
+        $offset = $result->offset;
+        $total = $result->total;
 
-        return $this->__fetch($url);
+        while (($limit * $offset) + $limit < $total) {
+            $result->limit = ($limit * $offset) + $limit;
+            $offset++;
+            $append = $this->__fetch($url.'&offset='.($offset*$limit));
+            $result->monitors->monitor = array_merge($result->monitors->monitor, $append->monitors->monitor);
+        }
+        $result->limit = ($limit * $offset) + $limit;
+
+        return $result;
     }
 
     /**
