@@ -86,11 +86,11 @@ class UptimeRobot
 
         if (preg_match("#\?#", $url))
         {
-            $url .= '&apiKey=' . $this->getApiKey();
+            $url .= '&apiKey=' . $this->getApiKey() . "&rand=" . mt_rand(1000000, 10000000);
         }
         else
         {
-            $url .= '?apiKey=' . $this->getApiKey();
+            $url .= '?apiKey=' . $this->getApiKey() . "&rand=" . mt_rand(1000000, 10000000);
         }
 
         $url .= '&format=' . $this->format;
