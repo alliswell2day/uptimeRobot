@@ -1,7 +1,9 @@
-uptimeRobot
-===========
+UptimeRobot APIv1
+=================
 
-This is a PHP wrapper for https://uptimerobot.com/api
+This is a PHP wrapper for https://uptimerobot.com/apiv1
+
+## The APIv1 will be retired by 1 Oct 2017 and please switch to [APIv2](https://uptimerobot.com/api) before that date.
 
 ## Example
 
